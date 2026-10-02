@@ -1,0 +1,20 @@
+# Next.js
+client/node_modules/
+client/.next/
+client/out/
+
+# Spring Boot
+backend/target/
+
+# Environment
+.env
+.env.*
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
