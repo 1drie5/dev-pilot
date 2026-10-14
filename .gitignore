@@ -5,6 +5,7 @@ client/out/
 
 # Spring Boot
 backend/target/
+backend/src/main/resources/application.properties
 
 # Environment
 .env
