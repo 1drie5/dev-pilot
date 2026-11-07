@@ -24,11 +24,13 @@ export function ChatMessages({
   messages,
   streamText,
   isLoading,
+  isStreaming = false,
 }: {
   repo: Repository;
   messages: ChatMessage[];
   streamText?: string;
   isLoading?: boolean;
+  isStreaming?: boolean;
 }) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -70,7 +72,7 @@ export function ChatMessages({
                       className={cn(
                         isUser
                           ? "bg-primary text-primary-foreground"
-                          : "bg-muted"
+                          : "bg-muted",
                       )}
                     >
                       {isUser ? (
@@ -87,7 +89,9 @@ export function ChatMessages({
                     align={isUser ? "end" : "start"}
                     className={cn(!isUser && "max-w-full")}
                   >
-                    <BubbleContent className={cn(!isUser && "w-full max-w-full px-4 py-3")}>
+                    <BubbleContent
+                      className={cn(!isUser && "w-full max-w-full px-4 py-3")}
+                    >
                       {isUser ? (
                         <span className="whitespace-pre-wrap">
                           {message.content}
@@ -99,13 +103,44 @@ export function ChatMessages({
                   </Bubble>
                   {!isUser && message.citations?.length > 0 && (
                     <MessageFooter>
-                      <CitationChips repo={repo} citations={message.citations} />
+                      <CitationChips
+                        repo={repo}
+                        citations={message.citations}
+                      />
                     </MessageFooter>
                   )}
                 </MessageContent>
               </Message>
             );
           })}
+
+          {isStreaming && !streamText && (
+            <Message align="start">
+              <MessageAvatar>
+                <Avatar className="size-8">
+                  <AvatarFallback className="bg-muted">
+                    <Bot className="size-4" />
+                  </AvatarFallback>
+                </Avatar>
+              </MessageAvatar>
+
+              <MessageContent>
+                <Bubble variant="muted" align="start">
+                  <BubbleContent className="flex items-center gap-1.5 px-4 py-4">
+                    <span className="sr-only">DevPilot is thinking</span>
+
+                    {[0, 1, 2].map((i) => (
+                      <span
+                        key={i}
+                        className="size-2 animate-ping rounded-full bg-primary/70"
+                        style={{ animationDelay: `${i * 0.2}s` }}
+                      />
+                    ))}
+                  </BubbleContent>
+                </Bubble>
+              </MessageContent>
+            </Message>
+          )}
 
           {streamText && (
             <Message align="start">

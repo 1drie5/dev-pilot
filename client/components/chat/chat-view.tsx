@@ -136,6 +136,7 @@ export function ChatView({ repoId }: { repoId: string }) {
                 messages={messagesQuery.data ?? []}
                 streamText={streamText}
                 isLoading={messagesQuery.isLoading}
+                isStreaming={streaming}
               />
               <ChatComposer
                 disabled={!sessionId}
