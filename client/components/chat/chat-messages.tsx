@@ -1,7 +1,7 @@
 "use client";
 
-import { Bot, UserRound } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { Bot, Check, Copy, UserRound } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 import { ChatMarkdown } from "@/components/chat/chat-markdown";
 import { CitationChips } from "@/components/chat/citation-chips";
@@ -33,6 +33,24 @@ export function ChatMessages({
   isStreaming?: boolean;
 }) {
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+
+  async function handleCopy(message: ChatMessage) {
+    try {
+      await navigator.clipboard.writeText(message.content);
+
+      setCopiedMessageId(message.id);
+
+      window.setTimeout(() => {
+        setCopiedMessageId((current) =>
+          current === message.id ? null : current,
+        );
+      }, 1500);
+    } catch {
+      console.error("Failed to copy message");
+    }
+  }
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -101,12 +119,35 @@ export function ChatMessages({
                       )}
                     </BubbleContent>
                   </Bubble>
-                  {!isUser && message.citations?.length > 0 && (
+                  {!isUser && (
                     <MessageFooter>
-                      <CitationChips
-                        repo={repo}
-                        citations={message.citations}
-                      />
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        {message.citations?.length > 0 && (
+                          <CitationChips
+                            repo={repo}
+                            citations={message.citations}
+                          />
+                        )}
+
+                        <button
+                          type="button"
+                          onClick={() => void handleCopy(message)}
+                          className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                          aria-label="Copy AI response"
+                        >
+                          {copiedMessageId === message.id ? (
+                            <>
+                              <Check className="size-3.5" />
+                              Copied!
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="size-3.5" />
+                              Copy
+                            </>
+                          )}
+                        </button>
+                      </div>
                     </MessageFooter>
                   )}
                 </MessageContent>
